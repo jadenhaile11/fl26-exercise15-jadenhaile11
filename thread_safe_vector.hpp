@@ -32,6 +32,7 @@ public:
         condition_.notify_one();
     }
 
+    // Waits until the vector has an element to remove.
     void wait_and_pop_back(T& value) {
         std::unique_lock<std::mutex> lock(mutex_);
         condition_.wait(lock, [this] { return !data_.empty(); });
@@ -39,6 +40,7 @@ public:
         data_.pop_back();
     }
 
+    // Tries to remove an element without waiting.
     bool try_pop_back(T& value) {
         std::lock_guard<std::mutex> lock(mutex_);
         if (data_.empty()) {
@@ -49,11 +51,13 @@ public:
         return true;
     }
 
+    // Checks whether the vector is empty.
     bool empty() const {
         std::lock_guard<std::mutex> lock(mutex_);
         return data_.empty();
     }
 
+    // Returns the current number of elements.
     std::size_t size() const {
         std::lock_guard<std::mutex> lock(mutex_);
         return data_.size();
